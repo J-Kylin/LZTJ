@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>LZTJ·MBTI | 猎罪图鉴角色测试</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: system-ui, 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(145deg, #1a2a3a 0%, #0f1a24 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            transition: opacity 0.35s ease;
+        }
+        body.fade-out {
+            opacity: 0;
+        }
+        .card {
+            max-width: 700px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 48px;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+        .header {
+            background: #1e2e3e;
+            padding: 1.2rem 1.5rem;
+            text-align: center;
+            color: #f0ede8;
+            border-bottom: 3px solid #c0a080;
+        }
+        .header h1 {
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+        }
+        .header p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        .progress-area {
+            padding: 0.8rem 1.5rem;
+            background: #e8e4dc;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #2c3e2f;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #ddd2c0;
+        }
+        .content {
+            padding: 2rem 1.8rem 1.5rem;
+            min-height: 420px;
+        }
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.35;
+            margin-bottom: 1.8rem;
+            color: #1e2a32;
+            border-left: 5px solid #c0a080;
+            padding-left: 1rem;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 1.8rem;
+        }
+        .option-btn {
+            background: #f2f0ea;
+            border: 1px solid #ddd6cc;
+            border-radius: 60px;
+            padding: 0.8rem 1.2rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-align: left;
+            color: #1e2a32;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            width: 100%;
+        }
+        .option-btn:hover {
+            background: #e5dfd5;
+            transform: scale(1.01);
+            border-color: #b2906e;
+        }
+        .skip-btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .skip-btn {
+            background: #f0e4d0;
+            border: 1px solid #d4c4aa;
+            border-radius: 60px;
+            padding: 0.7rem 1.8rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #a57c4c;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            text-align: center;
+            min-width: 180px;
+        }
+        .skip-btn:hover {
+            background: #e6d5bc;
+            color: #8b5a2e;
+            transform: scale(1.02);
+        }
+        .result-area {
+            text-align: center;
+            animation: fadeInUp 0.4s ease;
+        }
+        .result-icon {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .result-name {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2c5364, #0f2b38);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.3rem;
+        }
+        .result-sub {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #8b7a66;
+            margin-bottom: 1rem;
+        }
+        .result-desc {
+            background: #f4f1ea;
+            padding: 1.2rem;
+            border-radius: 28px;
+            margin: 1.2rem 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #2c3e2f;
+            text-align: left;
+        }
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .restart-btn, .jump-btn {
+            border: none;
+            padding: 0.7rem 1.3rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        .restart-btn {
+            background: #d9cdb0;
+            color: #2c3e2f;
+        }
+        .restart-btn:hover {
+            background: #c7b892;
+        }
+        .jump-btn {
+            background: #2c5f6e;
+            color: white;
+        }
+        .jump-btn:hover {
+            background: #1e4754;
+        }
+        .hidden {
+            display: none;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            background: #edece4;
+            padding: 0.8rem;
+            color: #6b5a4c;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="header">
+        <h1>🕵️ LZTJ·MBTI</h1>
+        <p>猎罪图鉴 · 人格解码（15题典藏版）</p>
+    </div>
+    <div class="progress-area">
+        <span>📋 第 <span id="currentQNum">1</span> / <span id="totalQNum">15</span> 题</span>
+        <span id="chaosCounter">🎭 乱答次数: 0</span>
+    </div>
+    <div class="content">
+        <div id="questionPanel"></div>
+        <div id="resultPanel" class="hidden"></div>
+    </div>
+    <footer>⚡ 选「我就不答」达到15次会触发彩蛋 · 选项顺序随机</footer>
+</div>
+
+<script>
+    // ---------- 角色数据 ----------
+    const RESULTS = {
+        shenyi: {
+            name: "🎨 沈翊",
+            title: "内向直觉型 · 高敏感画像师",
+            desc: "人群中安静但洞察一切，擅长从细节中看透人心。对他人情绪极其敏锐，决策依赖直觉与内心逻辑，温和却有距离感。适合艺术家、心理咨询师这类需要深度洞察的角色。",
+            link: ""
+        },
+        ducheng: {
+            name: "⚡ 杜城",
+            title: "行动派 · 掌控型队长",
+            desc: "果决、重义气、结果导向，是天生的领导者。不喜欢绕弯子，抗压能力强，对认可的人全力保护。适合一线管理、应急指挥等高压职业。",
+            link: ""
+        },
+        lihan: {
+            name: "💬 李晗",
+            title: "外向社交型 · 连接者",
+            desc: "活泼健谈，擅用网络与信息工具，乐于分享和帮忙，是团队的“气氛组”和桥梁。适合公关、数据分析等需要沟通整合的工作。",
+            link: ""
+        },
+        jiangfeng: {
+            name: "💪 蒋峰",
+            title: "忠诚执行型 · 乐天派",
+            desc: "热情、服从性高，执行力强，交给他的事会认真完成。有点粗线条，不记仇，能带动轻松氛围。适合团队外勤、助理或体育类角色。",
+            link: ""
+        },
+        laoyan: {
+            name: "🍵 老闫",
+            title: "稳定服务型 · 协调者",
+            desc: "温和耐心，存在感低但不可或缺，擅长倾听和默默提供帮助，像背景里的支撑者。经验丰富，遇事冷静，能中和冲突。适合后勤、档案管理、长者类职务。",
+            link: ""
+        },
+        // 彩蛋角色（青年版）—— 触发条件：chaosCount >= 15
+        shenyi_youth: {
+            name: "🔥 沈翊 · 青年版",
+            title: "混沌捣蛋鬼 · 乱序者",
+            desc: "你居然在乱选我的题目！你是个魔丸！ 🔥 叛逆、不按套路出牌、天生反骨，试图用乱答挑战测试系统。",
+            link: ""
+        },
+        ducheng_youth: {
+            name: "🔥 杜城 · 青年版",
+            title: "混沌捣蛋鬼 · 破序者",
+            desc: "你居然在乱选我的题目！你是个魔丸！ 🔥 叛逆、不按套路出牌、天生反骨，试图用乱答挑战测试系统。",
+            link: ""
+        }
+    };
+
+    // 原始题库 (选项固定配对角色加分)
+    const RAW_QUESTIONS = [
+        { text: "周末你更愿意怎么过？", options: [
+            { text: "一个人在家看书/画画/思考", role: "shenyi" },
+            { text: "约朋友打球/健身/吃饭", role: "ducheng" },
+            { text: "刷社交媒体/看剧/网上聊天", role: "lihan" },
+            { text: "帮家里人做事或跑腿", role: "jiangfeng" },
+            { text: "安静待着，有人叫就出门", role: "laoyan" }
+        ]},
+        { text: "在团队里，你通常扮演什么角色？", options: [
+            { text: "安静观察，偶尔提出关键想法", role: "shenyi" },
+            { text: "拍板决定，带头行动", role: "ducheng" },
+            { text: "活跃气氛，协调大家关系", role: "lihan" },
+            { text: "听指挥，执行力强", role: "jiangfeng" },
+            { text: "默默做好自己的事，不争不抢", role: "laoyan" }
+        ]},
+        { text: "朋友找你倾诉烦恼，你会？", options: [
+            { text: "安静听完，分析深层原因", role: "shenyi" },
+            { text: "直接说“那你想怎么办？行动起来”", role: "ducheng" },
+            { text: "讲个笑话/分享类似经历逗ta开心", role: "lihan" },
+            { text: "问“需要我帮你做什么？”", role: "jiangfeng" },
+            { text: "递纸巾，陪着，不多说", role: "laoyan" }
+        ]},
+        { text: "工作/学习中遇到难题，你的第一反应？", options: [
+            { text: "先自己思考，找内在逻辑", role: "shenyi" },
+            { text: "立刻查资料/试各种方法解决", role: "ducheng" },
+            { text: "问朋友/同事有没有经验", role: "lihan" },
+            { text: "按上级/老师给的步骤做", role: "jiangfeng" },
+            { text: "先放一放，等有思路再处理", role: "laoyan" }
+        ]},
+        { text: "你更擅长哪种类型的任务？", options: [
+            { text: "需要深度分析和创意的工作", role: "shenyi" },
+            { text: "需要快速决策和执行力的事", role: "ducheng" },
+            { text: "需要沟通协调和搜集信息的事", role: "lihan" },
+            { text: "流程明确、按部就班的事", role: "jiangfeng" },
+            { text: "需要耐心和细心的事", role: "laoyan" }
+        ]},
+        { text: "面对压力时，你通常？", options: [
+            { text: "内化情绪，自己消化", role: "shenyi" },
+            { text: "用行动对抗焦虑，做点啥", role: "ducheng" },
+            { text: "找人聊天/发动态排解", role: "lihan" },
+            { text: "按计划一步步来，不多想", role: "jiangfeng" },
+            { text: "睡一觉，自然就好了", role: "laoyan" }
+        ]},
+        { text: "别人怎么形容你比较多？", options: [
+            { text: "安静、有深度、有点神秘", role: "shenyi" },
+            { text: "果断、直接、有气场", role: "ducheng" },
+            { text: "开朗、好聊、朋友多", role: "lihan" },
+            { text: "靠谱、踏实、不抱怨", role: "jiangfeng" },
+            { text: "温和、好说话、存在感低", role: "laoyan" }
+        ]},
+        { text: "在社交场合，你通常是？", options: [
+            { text: "话很少，但一语中的", role: "shenyi" },
+            { text: "主动控场，容易被注意到", role: "ducheng" },
+            { text: "和大家都能聊几句", role: "lihan" },
+            { text: "跟着气氛走，别人带动", role: "jiangfeng" },
+            { text: "能躲就躲，躲在角落", role: "laoyan" }
+        ]},
+        { text: "你更看重朋友的哪种特质？", options: [
+            { text: "能理解你的内心世界", role: "shenyi" },
+            { text: "说到做到，讲义气", role: "ducheng" },
+            { text: "有趣、能带来新鲜信息", role: "lihan" },
+            { text: "靠谱、不鸽、有事真上", role: "jiangfeng" },
+            { text: "不judge，安静陪伴", role: "laoyan" }
+        ]},
+        { text: "做重要决定时，你依赖什么？", options: [
+            { text: "直觉和内心感受", role: "shenyi" },
+            { text: "结果导向，看哪个收益大", role: "ducheng" },
+            { text: "问问周围人的意见", role: "lihan" },
+            { text: "按规则/经验来做", role: "jiangfeng" },
+            { text: "怎么选都行，随缘", role: "laoyan" }
+        ]},
+        { text: "你更容易被哪种人吸引？", options: [
+            { text: "有才华、安静但有深度的人", role: "shenyi" },
+            { text: "有魄力、敢作敢当的人", role: "ducheng" },
+            { text: "热情、有趣、朋友多的人", role: "lihan" },
+            { text: "稳重、可靠、不张扬的人", role: "jiangfeng" },
+            { text: "温柔、细心、会照顾人的人", role: "laoyan" }
+        ]},
+        { text: "如果让你选一个副业，你会选？", options: [
+            { text: "心理咨询/艺术创作", role: "shenyi" },
+            { text: "创业/做管理/带团队", role: "ducheng" },
+            { text: "自媒体/社群运营/公关", role: "lihan" },
+            { text: "跑腿/代驾/体力型兼职", role: "jiangfeng" },
+            { text: "整理收纳/档案管理/客服", role: "laoyan" }
+        ]},
+        { text: "对于规则和权威，你的态度是？", options: [
+            { text: "理解规则背后的逻辑，但保留看法", role: "shenyi" },
+            { text: "不合理的规则就想打破", role: "ducheng" },
+            { text: "善于利用规则达成目标", role: "lihan" },
+            { text: "尊重规则，认真执行", role: "jiangfeng" },
+            { text: "懒得挑战，遵守就好", role: "laoyan" }
+        ]},
+        { text: "情绪上来时，你通常是？", options: [
+            { text: "压抑但能自我调节", role: "shenyi" },
+            { text: "直接爆发，说完就好", role: "ducheng" },
+            { text: "说出来就好了，不记仇", role: "lihan" },
+            { text: "小事不计较，大事忍不了", role: "jiangfeng" },
+            { text: "几乎不生气，比较佛", role: "laoyan" }
+        ]},
+        { text: "你理想中的工作环境是？", options: [
+            { text: "独立自由、创作空间大", role: "shenyi" },
+            { text: "高效直接、有话语权", role: "ducheng" },
+            { text: "氛围轻松、同事像朋友", role: "lihan" },
+            { text: "有明确分工、按部就班", role: "jiangfeng" },
+            { text: "稳定安静、没太多人际压力", role: "laoyan" }
+        ]}
+    ];
+
+    let currentIndex = 0;
+    let scores = { shenyi:0, ducheng:0, lihan:0, jiangfeng:0, laoyan:0 };
+    let chaosCount = 0;
+    let shuffledQuestions = [];
+
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function initShuffledQuestions() {
+        shuffledQuestions = RAW_QUESTIONS.map(q => {
+            let shuffledOpts = shuffleArray([...q.options]);
+            return {
+                text: q.text,
+                options: shuffledOpts
+            };
+        });
+    }
+
+    function updateProgress() {
+        document.getElementById('currentQNum').innerText = currentIndex + 1;
+        document.getElementById('chaosCounter').innerHTML = `🎭 乱答次数: ${chaosCount}`;
+    }
+
+    function showFinalResult() {
+        if (chaosCount >= 15) {
+            const isShenyi = Math.random() < 0.5;
+            const youthKey = isShenyi ? 'shenyi_youth' : 'ducheng_youth';
+            const youth = RESULTS[youthKey];
+            renderResultPage(youth.name, youth.title, youth.desc, youth.link);
+        } else {
+            let maxRole = null;
+            let maxScore = -1;
+            for (let [role, score] of Object.entries(scores)) {
+                if (score > maxScore) {
+                    maxScore = score;
+                    maxRole = role;
+                }
+            }
+            if (!maxRole) maxRole = "shenyi";
+            const normalResult = RESULTS[maxRole];
+            renderResultPage(normalResult.name, normalResult.title, normalResult.desc, normalResult.link);
+        }
+    }
+
+    function renderResultPage(name, title, desc, link) {
+        const hasLink = link && link.trim() !== "" && link !== "#";
+        let jumpBtnHtml = "";
+        if (hasLink) {
+            jumpBtnHtml = `<button class="jump-btn" id="jumpToLinkBtn">🚀 前往专属页面 →</button>`;
+        }
+        const resultHtml = `
+            <div class="result-area">
+                <div class="result-icon">🔮</div>
+                <div class="result-name">${name}</div>
+                <div class="result-sub">${title}</div>
+                <div class="result-desc">${desc}</div>
+                <div class="btn-group">
+                    <button class="restart-btn" id="restartTestBtn">🔄 重新测试</button>
+                    ${jumpBtnHtml}
+                </div>
+            </div>
+        `;
+        document.getElementById('resultPanel').innerHTML = resultHtml;
+        document.getElementById('questionPanel').classList.add('hidden');
+        document.getElementById('resultPanel').classList.remove('hidden');
+        
+        const restartBtn = document.getElementById('restartTestBtn');
+        if (restartBtn) restartBtn.addEventListener('click', () => fadeOutThen(() => resetAndRestart()));
+        
+        const jumpBtn = document.getElementById('jumpToLinkBtn');
+        if (jumpBtn && hasLink) {
+            jumpBtn.addEventListener('click', () => {
+                document.body.classList.add('fade-out');
+                setTimeout(() => window.location.href = link, 300);
+            });
+        }
+    }
+
+    function resetAndRestart() {
+        currentIndex = 0;
+        scores = { shenyi:0, ducheng:0, lihan:0, jiangfeng:0, laoyan:0 };
+        chaosCount = 0;
+        initShuffledQuestions();
+        updateProgress();
+        renderCurrentQuestion();
+    }
+
+    function fadeOutThen(callback) {
+        document.body.classList.add('fade-out');
+        setTimeout(() => {
+            callback();
+            document.body.classList.remove('fade-out');
+        }, 280);
+    }
+
+    function handleSkip() {
+        chaosCount++;
+        updateProgress();
+        if (currentIndex + 1 < shuffledQuestions.length) {
+            currentIndex++;
+            updateProgress();
+            renderCurrentQuestion();
+        } else {
+            fadeOutThen(() => {
+                showFinalResult();
+            });
+        }
+    }
+
+    function handleOptionClick(opt) {
+        if (opt.role) {
+            scores[opt.role] = (scores[opt.role] || 0) + 1;
+        }
+        if (currentIndex + 1 < shuffledQuestions.length) {
+            currentIndex++;
+            updateProgress();
+            renderCurrentQuestion();
+        } else {
+            fadeOutThen(() => {
+                showFinalResult();
+            });
+        }
+    }
+
+    function renderCurrentQuestion() {
+        const q = shuffledQuestions[currentIndex];
+        const optionsHtml = q.options.map(opt => {
+            return `<button class="option-btn" data-opt='${JSON.stringify(opt)}'>${opt.text}</button>`;
+        }).join('');
+        const skipHtml = `<div class="skip-btn-container"><button class="skip-btn" id="skipBtn">🙅 我就不答！（点击跳过题目）</button></div>`;
+        const html = `
+            <div class="question-text">${q.text}</div>
+            <div class="options">
+                ${optionsHtml}
+            </div>
+            ${skipHtml}
+        `;
+        document.getElementById('questionPanel').innerHTML = html;
+        document.getElementById('questionPanel').classList.remove('hidden');
+        document.getElementById('resultPanel').classList.add('hidden');
+        
+        document.querySelectorAll('#questionPanel .option-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const optData = JSON.parse(btn.dataset.opt);
+                handleOptionClick(optData);
+            });
+        });
+        
+        const skipBtn = document.getElementById('skipBtn');
+        if (skipBtn) {
+            skipBtn.addEventListener('click', handleSkip);
+        }
+    }
+
+    function initTest() {
+        initShuffledQuestions();
+        currentIndex = 0;
+        scores = { shenyi:0, ducheng:0, lihan:0, jiangfeng:0, laoyan:0 };
+        chaosCount = 0;
+        updateProgress();
+        renderCurrentQuestion();
+    }
+
+    initTest();
+</script>
+</body>
+</html>
